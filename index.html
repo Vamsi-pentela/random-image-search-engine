@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Search Engine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container" class="container">
+        <h1>Image Search Engine by vamsi</h1>
+        <input id="input" type="text" placeholder="Search for images...">
+        <button id="gnt" onclick="vamsi()">Search</button>
+    </div>
+    <div id="result" class="result"></div>
+    <button id="more" class="more" onclick="loadMore()">More</button>
+    
+    <script>
+        const container = document.getElementById("container");
+        const inputElement = document.getElementById("input");
+        const gnt = document.getElementById("gnt");
+        const more = document.getElementById("more");
+        const resultDiv = document.getElementById("result");    
+
+        let page = 1;
+
+        async function vamsi() {
+            const input = inputElement.value;
+
+            const url = `https://api.unsplash.com/search/photos?page=${page}&query=${input}&client_id=ec_5ilHVQ2tK9CjatoSGtlZZHWVdCbW0msPKdj0WXdw&per_page=15`;
+           
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("Error fetching data");
+                }
+
+                const data = await response.json();
+                console.log(data);
+                if(page===1){
+                    resultDiv.innerHTML="";
+                }
+
+                const results = data.results;
+                
+                results.map((result) => {
+                    const image = document.createElement("img");
+                    image.src = result.urls.small;
+                    
+                    const imagelink = document.createElement("a");
+                    imagelink.href = result.links.html;
+                    imagelink.target = "_blank";
+                    imagelink.appendChild(image);
+                    
+                    resultDiv.appendChild(imagelink);
+                });
+                more.style.display="block";
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function loadMore() {
+            page++;
+            vamsi();
+        }
+
+        gnt.addEventListener("keypress", function(event) {
+            if (event.key ==="Enter") {
+              vamsi();
+            }
+          }); 
+    
+    </script>
+</body>
+</html>
+
+
+
